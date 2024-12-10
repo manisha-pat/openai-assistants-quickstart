@@ -1,30 +1,25 @@
 import { openai } from "@/app/openai";
 
-// Send a new message to a thread
-export async function POST(
-  request: Request,
-  context: { params: { threadId } }
-) {
+export default async function handler(req, res) {
+  const { threadId } = req.query;
+
+  if (req.method !== 'POST') {
+    res.setHeader('Allow', ['POST']);
+    res.status(405).json({ error: 'Method Not Allowed' });
+    return;
+  }
+
   try {
-    const { threadId } = context.params; // Extract threadId from params
-    const { toolCallOutputs, runId } = await request.json(); // Parse request body
+    const { content } = JSON.parse(req.body);
 
-    // Call OpenAI API
-    const stream = openai.beta.threads.runs.submitToolOutputsStream(
-      threadId,
-      runId,
-      { tool_outputs: toolCallOutputs }
-    );
+    if (!content) {
+      res.status(400).json({ error: 'Content is required' });
+      return;
+    }
 
-    // Return the readable stream
-    return new Response(stream.toReadableStream(), {
-      headers: { "Content-Type": "application/json" },
-    });
+    // Simulate AI response
+    res.status(200).json({ reply: `Response to: ${content}` });
   } catch (error) {
-    console.error("Error in POST handler:", error);
-    return new Response(
-      JSON.stringify({ error: "Internal Server Error", details: error.message }),
-      { status: 500, headers: { "Content-Type": "application/json" } }
-    );
+    res.status(500).json({ error: 'Internal Server Error' });
   }
 }
