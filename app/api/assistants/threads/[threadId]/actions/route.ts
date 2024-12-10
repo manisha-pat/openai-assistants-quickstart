@@ -1,25 +1,15 @@
 import { openai } from "@/app/openai";
 
-import { NextResponse } from 'next/server';
+// Send a new message to a thread
+export async function POST(request, { params: { threadId } }) {
+  const { toolCallOutputs, runId } = await request.json();
 
-export async function POST(
-  request: Request,
-  { params }: { params: { threadId: string } }
-) {
-  try {
-    // Extract threadId from params
-    const { threadId } = params;
+  const stream = openai.beta.threads.runs.submitToolOutputsStream(
+    threadId,
+    runId,
+    // { tool_outputs: [{ output: result, tool_call_id: toolCallId }] },
+    { tool_outputs: toolCallOutputs }
+  );
 
-    // Parse the body of the request
-    const body = await request.json();
-
-    // Your logic here
-    console.log('Thread ID:', threadId);
-    console.log('Request Body:', body);
-
-    return NextResponse.json({ success: true, threadId, body });
-  } catch (error) {
-    console.error('Error:', error);
-    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
-  }
+  return new Response(stream.toReadableStream());
 }
