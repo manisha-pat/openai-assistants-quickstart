@@ -1,25 +1,25 @@
 import { openai } from "@/app/openai";
 
-export default async function handler(req, res) {
-  const { threadId } = req.query;
+import { NextResponse } from 'next/server';
 
-  if (req.method !== 'POST') {
-    res.setHeader('Allow', ['POST']);
-    res.status(405).json({ error: 'Method Not Allowed' });
-    return;
-  }
-
+export async function POST(
+  request: Request,
+  { params }: { params: { threadId: string } }
+) {
   try {
-    const { content } = JSON.parse(req.body);
+    // Extract threadId from params
+    const { threadId } = params;
 
-    if (!content) {
-      res.status(400).json({ error: 'Content is required' });
-      return;
-    }
+    // Parse the body of the request
+    const body = await request.json();
 
-    // Simulate AI response
-    res.status(200).json({ reply: `Response to: ${content}` });
+    // Your logic here
+    console.log('Thread ID:', threadId);
+    console.log('Request Body:', body);
+
+    return NextResponse.json({ success: true, threadId, body });
   } catch (error) {
-    res.status(500).json({ error: 'Internal Server Error' });
+    console.error('Error:', error);
+    return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
 }
