@@ -3,7 +3,7 @@ import { openai } from "@/app/openai";
 // Send a new message to a thread
 export async function POST(
   request: Request,
-  { params }: { params: { threadId: string } }
+  { params }: { params: { threadId } }
 ) {
   try {
     // Extract data from request and params
