@@ -3,7 +3,7 @@ import { openai } from "@/app/openai";
 // Send a new message to a thread
 export async function POST(
   request: Request,
-  context: { params: { threadId: string } }
+  context: { params: { threadId } }
 ) {
   try {
     const { threadId } = context.params; // Extract threadId from params
