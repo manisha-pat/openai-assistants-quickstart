@@ -1,4 +1,4 @@
-import { NextRequest } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { openai } from "@/app/openai";
 
 // Send a new message to a thread
@@ -14,5 +14,5 @@ export async function POST(
     { tool_outputs: toolCallOutputs }
   );
 
-  return new Response(stream.toReadableStream());
+  return new NextResponse(stream.toReadableStream());
 }
