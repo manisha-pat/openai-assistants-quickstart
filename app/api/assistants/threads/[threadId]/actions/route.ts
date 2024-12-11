@@ -1,17 +1,18 @@
+import { NextRequest } from "next/server";
 import { openai } from "@/app/openai";
 
 // Send a new message to a thread
 export async function POST(
-    request: Request,
-    context: { params: { threadId: string } }
+  request: NextRequest,
+  { params }: { params: { threadId: string } }
 ) {
-    const { toolCallOutputs, runId } = await request.json();
+  const { toolCallOutputs, runId } = await request.json();
 
-    const stream = openai.beta.threads.runs.submitToolOutputsStream(
-        context.params.threadId,
-        runId,
-        { tool_outputs: toolCallOutputs }
-    );
+  const stream = openai.beta.threads.runs.submitToolOutputsStream(
+    params.threadId,
+    runId,
+    { tool_outputs: toolCallOutputs }
+  );
 
-    return new Response(stream.toReadableStream());
+  return new Response(stream.toReadableStream());
 }
